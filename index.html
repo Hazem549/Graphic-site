@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Doe | Graphic Designer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>Alex Doe</h1>
+            <p class="tagline">Branding & Digital Design</p>
+        </div>
+    </header>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="#work">Work</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+            <a href="/admin/" class="admin-link">Admin</a>
+        </div>
+    </nav>
+
+    <section id="work" class="portfolio">
+        <div class="container">
+            <h2>Selected Projects</h2>
+            <div class="portfolio-grid" id="portfolio-grid">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>About Me</h2>
+                    <p>I'm a graphic designer with 5+ years of experience creating memorable brand identities and digital experiences. My work focuses on clean aesthetics and functional design.</p>
+                    <p>When I'm not designing, you'll find me hiking or experimenting with typography.</p>
+                </div>
+                <div class="skills">
+                    <h3>Skills</h3>
+                    <ul>
+                        <li>Brand Identity</li>
+                        <li>Print Design</li>
+                        <li>UI/UX</li>
+                        <li>Typography</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Get In Touch</h2>
+            <div class="contact-methods">
+                <a href="mailto:hello@alexdoe.com" class="contact-link">
+                    <i class="fas fa-envelope"></i> hello@alexdoe.com
+                </a>
+                <a href="#" class="contact-link">
+                    <i class="fab fa-behance"></i> behance.net/alexdoe
+                </a>
+                <a href="#" class="contact-link">
+                    <i class="fab fa-instagram"></i> @alexdoe.design
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 Alex Doe. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Portfolio Loader with Error Handling
+        async function loadPortfolio() {
+            const grid = document.getElementById('portfolio-grid');
+            try {
+                const response = await fetch('/data/portfolio.json');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                
+                grid.innerHTML = data.items.map(item => `
+                    <div class="portfolio-item">
+                        <img src="${item.image}" alt="${item.title}" loading="lazy">
+                        <div class="overlay">
+                            <h3>${item.title}</h3>
+                            <p>${item.category}</p>
+                            ${item.description ? `<div class="description">${item.description}</div>` : ''}
+                            ${item.tags ? `<div class="tags">${item.tags.map(tag => `<span>#${tag}</span>`).join('')}</div>` : ''}
+                            ${item.url ? `<a href="${item.url}" class="project-link" target="_blank">View Project</a>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading portfolio:', error);
+                grid.innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load projects. Please refresh the page or try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Netlify Identity Management
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.netlifyIdentity) {
+                window.netlifyIdentity.on('init', user => {
+                    if (!user) {
+                        window.netlifyIdentity.on('login', () => {
+                            document.location.href = '/admin/';
+                        });
+                    }
+                });
+            }
+            
+            loadPortfolio();
+        });
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

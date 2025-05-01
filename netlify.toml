@@ -1,16 +1,11 @@
-[[redirects]]
-  from = "/admin/*"
-  to = "/admin/index.html"
-  status = 200
+[build]
+  publish = "." 
+  command = "echo 'No build required'"
 
-[[plugins]]
-  package = "netlify-plugin-cms"
-  # netlify.toml
 [[redirects]]
   from = "/admin/*"
   to = "/admin/index.html"
   status = 200
-  force = true
 
 [[headers]]
   for = "/admin/*"
